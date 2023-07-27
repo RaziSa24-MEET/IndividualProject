@@ -3,15 +3,15 @@ from flask import session as login_session
 import pyrebase
 
 config = {
-  'apiKey': "AIzaSyAffFgoB-Wk84ExHBGVHmSYJPTYi7s8G-I",
-  'authDomain': "lastlabs-b49bc.firebaseapp.com",
-  'databaseURL': "https://lastlabs-b49bc-default-rtdb.firebaseio.com",
-  'projectId': "lastlabs-b49bc",
-  'storageBucket': "lastlabs-b49bc.appspot.com",
-  'messagingSenderId': "648347968330",
-  'appId': "1:648347968330:web:c31cd94e06233641dc97b3",
-  'measurementId': "G-LFKYFJMW7B",
-  "databaseURL":"https://lastlabs-b49bc-default-rtdb.firebaseio.com/"
+  'apiKey': "AIzaSyCFTfTzH9LvizSjlAJNg3u13wb4SZ1hpxM",
+  'authDomain': "project-8f3a9.firebaseapp.com",
+  'databaseURL': "https://project-8f3a9-default-rtdb.firebaseio.com",
+  'projectId': "project-8f3a9",
+  'storageBucket': "project-8f3a9.appspot.com",
+  'messagingSenderId': "947227924003",
+  'appId': "1:947227924003:web:24440249868f28039f8396",
+  'measurementId': "G-JKWKYDTNZ7",
+  "databaseURL":"https://project-8f3a9-default-rtdb.firebaseio.com/"
 }
 
 
@@ -31,7 +31,7 @@ def signin():
         password = request.form['password']
         try:
             login_session['user'] = auth.sign_in_with_email_and_password(email, password)
-            return redirect(url_for('add_tweet'))
+            return redirect(url_for('add_note'))
         except:
             error = "Authentication failed"
     return render_template("signin.html")
@@ -52,30 +52,29 @@ def signup():
             login_session['user'] = auth.create_user_with_email_and_password(email, password)
             uid = login_session['user']['localId']
             db.child("Users").child(uid).set(user)
-            return redirect(url_for('add_tweet'))
+            return render_template('newnote.html')
         except:
             error = "Authentication failed"
             print(error)
     return render_template("signup.html")
 
 
-@app.route('/add_tweet', methods=['GET', 'POST'])
-def add_tweet():
+@app.route('/add_note', methods=['GET', 'POST'])
+def add_note():
     if request.method =="POST":
         title = request.form["Title"]
         text = request.form["Text"]
-        Tweet = {'Title':title ,"Text":text ,"UID":login_session['user']['localId']}
+        Note = {'Title':title ,"Text":text ,"UID":login_session['user']['localId']}
         try:
-            db.child('Tweet').push(Tweet)
+            db.child('Notes').push(Note)
         except:
             print('error')
+    return render_template("newnote.html")
 
-    return render_template("add_tweet.html")
-
-@app.route("/all_tweets")
-def all_tweets():
-    tweets = db.child('Tweet').get().val()
-    return render_template("tweets.html" ,tweets = tweets)
+@app.route("/all_notes")
+def all_notes():
+    notes = db.child('Notes').get().val()
+    return render_template("notes.html" ,notes = notes)
 
 
 
